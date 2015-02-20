@@ -3,5 +3,9 @@
             [shorty.core :refer :all]))
 
 (deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+  (testing "start assigns stop-server-fn"
+    (stop)
+    (binding [run-server (constantly true)]
+      (start)
+      (is (= true @stop-server-fn)))))
+

@@ -18,18 +18,19 @@
   (POST "/shorten" [] shorten)
   (GET  "/statictics/:code" [code] (>>= code fetch-url stats))
   (GET  "/expand/:code" [code] (>>= code fetch-url expand))
-  (GET  "/:code" [code] (>>= code fetch-url inc-stats redirect))
-  )
+  (GET  "/:code" [code] (>>= code fetch-url inc-stats redirect)))
 
-(defonce stop-server-fn (atom nil))
+(def stop-server-fn (atom nil))
 
 (defn stop []
-  (when @stop-server-fn
+  (when (and @stop-server-fn (fn? @stop-server-fn))
     (@stop-server-fn :timeout 100)))
+
+(def ^:dynamic run-server #'http/run-server)
 
 (defn start []
   (reset! stop-server-fn
-          (http/run-server (-> #'routes
+          (run-server (-> #'routes
                                (wrap-defaults api-defaults)
                                wrap-with-logger)
                            {:port (or (:port env) 8080)})))

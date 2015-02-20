@@ -1,15 +1,14 @@
 (ns shorty.core
-  (:require [org.httpkit.server :as http]
-            [compojure.core :refer [defroutes GET POST ANY context]]
-            [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
-            [ring.middleware.logger :refer [wrap-with-logger]]
+  (:require [compojure.core :refer [GET POST defroutes]]
             [environ.core :refer [env]]
-            [clojure.core.async :refer [thread-call]]
             [onelog.core :as log]
-            [korma.core :refer :all]
-            [korma.db :refer :all]
+            [org.httpkit.server :as http]
+            [ring.middleware.defaults :refer [api-defaults
+                                              wrap-defaults]]
+            [ring.middleware.logger :refer [wrap-with-logger]]
             [shorty.db :refer [fetch-url]]
-            [shorty.web :refer [>>= shorten stats expand inc-stats redirect]])
+            [shorty.web :refer [>>= expand inc-stats redirect shorten
+                                stats]])
   (:gen-class))
 
 (log/start! "shorty.log")

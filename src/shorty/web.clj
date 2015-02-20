@@ -1,14 +1,9 @@
 (ns shorty.web
-  (:require [org.httpkit.server :as http]
-            [compojure.core :refer [defroutes GET POST]]
-            [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
-            [ring.middleware.logger :refer [wrap-with-logger]]
-            [environ.core :refer [env]]
-            [clojure.core.async :refer [thread-call]]
+  (:require [clojure.core.async :refer [thread-call]]
             [onelog.core :as log]
-            [shorty.utils :refer [presence defn-maybe]]
+            [shorty.coder :refer [encode]]
             [shorty.db :as db]
-            [shorty.coder :refer [encode]]))
+            [shorty.utils :refer [defn-maybe presence]]))
 
 (def domain "http://some-doma.in")
 

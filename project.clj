@@ -19,6 +19,7 @@
   :profiles {:uberjar {:aot :all}
              :dev [:dev-common :dev-overrides]
              :dev-common {:dependencies [[javax.servlet/servlet-api "2.5"]
+                                         [slamhound "1.5.5"]
                                          ;; [org.clojure/clojure "1.7.0-alpha5"]
                                          [org.clojure/tools.namespace "0.2.9"]
                                          [debugger "0.1.4"]

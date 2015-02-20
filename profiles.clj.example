@@ -1,0 +1,2 @@
+{:dev-overrides {:env {:db "shorty" :user "shorty" :password "shorty" :port 8000}}}
+

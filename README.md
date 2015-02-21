@@ -10,7 +10,11 @@ Yet another URL shortening service. Meant for educational purposes.
 
 ## Usage
 
-    java -jar shorty-0.1.0-standalone.jar
+    # give database credentials to run jar
+    java -Ddb=foo -Duser=bar -Dpassword=baz -jar shorty-0.1.0-standalone.jar
+
+    # or export them as shell vars
+    DB=foo USER=bar PASSWORD=baz java -jar shorty-0.1.0-standalone.jar
 
     # shorten
     curl -i -X POST -H "Content-Type:application/x-www-form-urlencoded" -d "url=http://url-to-short.com/with?params=true" http://127.0.0.1:8080/shorten
@@ -46,6 +50,9 @@ Yet another URL shortening service. Meant for educational purposes.
 
     ;; disconnect from db
     (do (if-let [p (-> korma.db/_default deref :pool)] (-> p deref :datasource .close)) (reset! korma.db/_default nil))
+
+    ;; build project for deploy
+    lein uberjar
 
 ## License
 

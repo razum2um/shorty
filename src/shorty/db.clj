@@ -7,13 +7,13 @@
 
 (def db-host (or (env :host) "localhost"))
 
-(def jdbc-spec (merge {:classname "org.postgresql.Driver"
-                       :subprotocol "postgresql"
-                       :subname (str "//" db-host "/" (env! :db))}
-                      (env! :db :user :password)))
+(def jdbc-spec
+  (merge {:classname "org.postgresql.Driver"
+          :subprotocol "postgresql"
+          :subname (str "//" db-host "/" (env :db))}
+         (select-keys env [:db :user :password])))
 
-(defdb shorty-db (postgres (merge {:make-pool? (not (:test env))}
-                                  jdbc-spec)))
+(defdb shorty-db (postgres jdbc-spec))
 
 (defentity urls
   (fields :id :url :code :open_count))

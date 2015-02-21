@@ -9,6 +9,8 @@
 
 (def jdbc-spec
   (merge {:classname "org.postgresql.Driver"
+          :minimum-pool-size 100
+          :maximum-pool-size 500
           :subprotocol "postgresql"
           :subname (str "//" db-host "/" (env :db))}
          (select-keys env [:db :user :password])))

@@ -1,3 +1,4 @@
 language: clojure
 script: "./setup.sh auto; DB='shorty_test' lein2 with-profile +test test"
+sudo: false
 lein: lein2

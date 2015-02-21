@@ -11,6 +11,7 @@
                  [postgresql "9.3-1102.jdbc41"]
                  [korma "0.4.0" :exclusions [c3p0]]
                  [com.mchange/c3p0 "0.9.5"]
+                 [org.clojure/core.memoize "0.5.6"]
                  [ring/ring-defaults "0.1.4"]
                  [ring.middleware.logger "0.5.0"]
                  [environ "1.0.0"]]
@@ -26,11 +27,11 @@
                                          [org.clojure/tools.namespace "0.2.9"]
                                          [debugger "0.1.4"]
                                          [aprint "0.1.3"]]
-                          :env {:port 8080}}
+                          :env {:port 8080 :cache 1}}
              :dev-overrides {} ;; see profiles.clj
              :test [:test-common :test-overrides]
              :test-common {:dependencies [[org.clojure/test.check "0.7.0"]]
-                           :env {:port 7070 :test true}}
+                           :env {:port 7070 :test true :cache 1}}
              :test-overrides {}}
   :jvm-opts ["-XX:-OmitStackTraceInFastThrow"])
 

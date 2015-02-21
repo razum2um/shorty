@@ -7,6 +7,7 @@
                                               wrap-defaults]]
             [ring.middleware.logger :refer [wrap-with-logger]]
             [shorty.coder :refer [decode]]
+            [clojure.core.memoize :as memo]
             [shorty.db :refer [find-url]]
             [shorty.web :refer [>>= expand inc-stats redirect shorten
                                 stats]])
@@ -17,11 +18,16 @@
 (log/start! log)
 (log/set-debug!)
 
+(def lru-threshold (or (:cache env) 10000))
+(def decode* (memo/lru decode :lru/threshold lru-threshold))
+(def find-url* (memo/lru find-url :lru/threshold lru-threshold))
+(def decode+find-url (comp find-url* decode*))
+
 (defroutes routes
   (POST "/shorten" [] shorten)
-  (GET  "/statistics/:code" [code] (>>= code decode find-url stats))
-  (GET  "/expand/:code" [code] (>>= code decode find-url expand))
-  (GET  "/:code" [code] (>>= code decode find-url inc-stats redirect)))
+  (GET  "/statistics/:code" [code] (>>= code decode* find-url stats))
+  (GET  "/expand/:code"     [code] (>>= code decode+find-url expand))
+  (GET  "/:code"            [code] (>>= code decode+find-url inc-stats redirect)))
 
 (def stop-server-fn (atom nil))
 
@@ -39,11 +45,11 @@
                                   (wrap-defaults api-defaults)
                                   wrap-with-logger)
                               {:port port*}))
-     port*)))
+     (println (str "Started listening on http://127.0.0.1:" port*)))))
 
 (defn -main
   [& args]
-  (println (str "Started listening on http://127.0.0.1:" (start)))
+  (start)
   (println "Check the log:" log))
 
 (set! *warn-on-reflection* true)

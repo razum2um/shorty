@@ -16,7 +16,7 @@
 
 (defroutes routes
   (POST "/shorten" [] shorten)
-  (GET  "/statictics/:code" [code] (>>= code fetch-url stats))
+  (GET  "/statistics/:code" [code] (>>= code fetch-url stats))
   (GET  "/expand/:code" [code] (>>= code fetch-url expand))
   (GET  "/:code" [code] (>>= code fetch-url inc-stats redirect)))
 

@@ -22,7 +22,7 @@ Yet another URL shortening service. Meant for educational purposes.
     curl -i http://127.0.0.1:8080/expand/dgd
 
     # stats ("dgd" is the code)
-    curl -i http://127.0.0.1:8080/statictics/dgd
+    curl -i http://127.0.0.1:8080/statistics/dgd
 
 ## REPL tricks
 

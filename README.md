@@ -2,6 +2,8 @@
 
 Yet another URL shortening service. Meant for educational purposes.
 
+[![Build Status][BS img]][Build Status]
+
 ## Installation
 
     ./setup.sh
@@ -51,4 +53,7 @@ Copyright © 2015 Vlad Bokov
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
+
+[BS img]: https://travis-ci.org/razum2um/shorty.png
+[Build Status]: https://travis-ci.org/razum2um/shorty
 

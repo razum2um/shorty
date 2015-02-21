@@ -1,5 +1,6 @@
 (ns shorty.utils
-  (:require [environ.core :refer [env]]))
+  (:require [environ.core :refer [env]])
+  (:import [org.apache.commons.validator.routines UrlValidator]))
 
 (defn env!
   ([k]
@@ -14,4 +15,7 @@
   `(do (defmulti ~x class)
        (defmethod ~x nil [~'_] nil)
        (defmethod ~x :default ~@body)))
+
+(defn url-validator [s]
+  (.isValid (UrlValidator.) s))
 

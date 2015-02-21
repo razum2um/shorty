@@ -14,7 +14,6 @@
   (insert urls (values {:url url})))
 
 (defn increment-counter [id]
-  (Thread/sleep 10000)
   (update urls
           (set-fields {:hits (raw "urls.hits + 1")})
           (where {:id [= id]})))

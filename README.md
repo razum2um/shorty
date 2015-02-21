@@ -1,43 +1,51 @@
 # shorty
 
-FIXME: description
+Yet another URL shortening service. Meant for educational purposes.
 
 ## Installation
 
-Download from http://example.com/FIXME.
+    ./setup.sh
 
 ## Usage
 
-FIXME: explanation
+    java -jar shorty-0.1.0-standalone.jar
 
-    $ java -jar shorty-0.1.0-standalone.jar [args]
+    # shorten
+    curl -i -X POST -H "Content-Type:application/x-www-form-urlencoded" -d "url=http://url-to-short.com/with?params=true" http://127.0.0.1:8080/shorten
 
-## Options
+    # redirect ("dgd" is the code)
+    curl -i http://127.0.0.1:8080/dgd
 
-FIXME: listing of options this app accepts.
+    # expand ("dgd" is the code)
+    curl -i http://127.0.0.1:8080/expand/dgd
+
+    # stats ("dgd" is the code)
+    curl -i http://127.0.0.1:8080/statictics/dgd
 
 ## REPL tricks
 
-    ;; refreshes the code
+    ;; after setup fire in bash
+    lein repl
+
+    ;; the first thing you need: refreshing the code
     (clojure.tools.namespace.repl/refresh)
 
-    ;; restarts webserver
+    ;; then just use the code, e.g this restarts webserver
     (do (shorty.core/stop) (clojure.tools.namespace.repl/refresh) (shorty.core/start))
 
-    ;; disconnects from db
+    ;; run some test
+    (clojure.test/run-tests 'shorty.web-test)
+
+    ;; run all tests
+    (clojure.test/run-all-tests)
+
+    ;; disconnect from db
     (do (if-let [p (-> korma.db/_default deref :pool)] (-> p deref :datasource .close)) (reset! korma.db/_default nil))
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
 
 ## License
 
-Copyright © 2015 FIXME
+Copyright © 2015 Vlad Bokov
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
+

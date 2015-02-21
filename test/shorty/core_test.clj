@@ -2,10 +2,10 @@
   (:require [clojure.test :refer :all]
             [shorty.core :refer :all]))
 
-(deftest a-test
+(deftest fill-stop-server-fn
   (testing "start assigns stop-server-fn"
     (stop)
-    (binding [run-server (constantly true)]
+    (with-redefs [org.httpkit.server/run-server (constantly true)]
       (start)
       (is (= true @stop-server-fn)))))
 

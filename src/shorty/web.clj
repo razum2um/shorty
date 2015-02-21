@@ -1,14 +1,16 @@
 (ns shorty.web
-  (:require [clojure.core.async :refer [thread-call]]
+  (:require [validateur.validation :refer :all]
+            [clojure.string :refer [join]]
+            [clojure.set :refer [union]]
             [onelog.core :as log]
             [shorty.coder :refer [encode]]
             [shorty.db :as db]
-            [shorty.utils :refer [defn-maybe presence]]))
+            [shorty.utils :refer [defn-maybe presence url-validator]]))
 
-(def domain "http://some-doma.in")
+(def ^:dynamic domain "http://some-doma.in")
 
-(defn error-resp [body]
-  {:status 400 :body body})
+(defn error-resp [errors]
+  {:status 400 :body (->> errors vals flatten (apply union) (join ", "))})
 
 (defn not-found-resp [code]
   {:status 404 :body (str "No such code found: " code)})
@@ -17,32 +19,28 @@
   {:status 200 :body (str domain "/" code)})
 
 (defn-maybe stats [{:keys [hits] :as row}]
-  (log/debug row)
   {:status 200 :body (str hits)})
 
 (defn-maybe expand [{:keys [url] :as row}]
   {:status 200 :body (str url)})
 
 (defn-maybe inc-stats [{:keys [id] :as row}]
-  (thread-call (fn [] (db/increment-counter id) nil))
+  (future (db/increment-counter id))
   row)
 
 (defn-maybe redirect [{:keys [url] :as row}]
   {:status 302 :headers {"Location" url} :body (str "Redirected to " url)})
 
-(defmacro validate-presence [binds then]
-  (let [[bind-name bind-form] binds
-        param-name (last bind-form)
-        error-msg (str "Please provide " param-name " param")]
-    `(if-let [temp# (presence ~bind-form)]
-       (let [~bind-name temp#]
-         ~then)
-       (error-resp ~error-msg))))
+(def shorten-validator
+  (validation-set
+    (presence-of :url)
+    (validate-by :url url-validator :message "url is invalid")))
 
-(defn shorten [req]
-  (validate-presence [url (-> req :params :url)]
-                     (let [{:keys [id]} (db/create-url url)]
-                       (show-code-resp (encode id)))))
+(defn shorten [{:keys [params] :as req}]
+  (if (valid? shorten-validator params)
+    (let [{:keys [id]} (db/create-url (:url params))]
+      (-> id encode show-code-resp))
+    (-> params shorten-validator error-resp)))
 
 (defmacro >>= [x & fns]
   `(or (-> ~x ~@fns)

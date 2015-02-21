@@ -1,2 +1,1 @@
-{:dev-overrides {:env {:db "shorty" :user "shorty" :password "shorty" :port 8000}}}
-
+{:dev-overrides {:env {:db "shorty" :user "razum2um" :password ""}} :test-overrides {:env {:db "shorty_test" :user "razum2um" :password ""}}}

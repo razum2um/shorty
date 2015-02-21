@@ -11,7 +11,7 @@
                                 stats]])
   (:gen-class))
 
-(log/start! "shorty.log")
+(log/start! "log/shorty.log")
 (log/set-debug!)
 
 (defroutes routes
@@ -26,11 +26,9 @@
   (when (and @stop-server-fn (fn? @stop-server-fn))
     (@stop-server-fn :timeout 100)))
 
-(def ^:dynamic run-server #'http/run-server)
-
 (defn start []
   (reset! stop-server-fn
-          (run-server (-> #'routes
+          (http/run-server (-> #'routes
                                (wrap-defaults api-defaults)
                                wrap-with-logger)
                            {:port (or (:port env) 8080)})))

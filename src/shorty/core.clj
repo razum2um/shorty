@@ -41,10 +41,10 @@
   ([port]
    (let [port* (int (or port (:port env) 8080))]
      (reset! stop-server-fn
-             (http/run-server (-> #'routes
-                                  (wrap-defaults api-defaults)
-                                  wrap-with-logger)
-                              {:port port*}))
+             (http/run-server
+               ;; #'routes
+               (-> #'routes (wrap-defaults api-defaults) wrap-with-logger)
+               {:port port*}))
      (println (str "Started listening on http://127.0.0.1:" port*)))))
 
 (defn -main

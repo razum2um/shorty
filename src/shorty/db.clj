@@ -10,7 +10,7 @@
 (defentity urls
   (fields :id :url :code :open_count))
 
-(defn create-url [url]
+(defn create-url [{:keys [url] :as row}]
   (insert urls (values {:url url})))
 
 (defn increment-counter [id]
@@ -23,9 +23,9 @@
           (set-fields url)
           (where {:id [= id]})))
 
-(defn fetch-url [code]
+(defn find-url [id]
   (-> (select* urls)
-      (where {:id [= (decode code)]})
+      (where {:id [= id]})
       select
       first))
 

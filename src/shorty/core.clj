@@ -6,7 +6,8 @@
             [ring.middleware.defaults :refer [api-defaults
                                               wrap-defaults]]
             [ring.middleware.logger :refer [wrap-with-logger]]
-            [shorty.db :refer [fetch-url]]
+            [shorty.coder :refer [decode]]
+            [shorty.db :refer [find-url]]
             [shorty.web :refer [>>= expand inc-stats redirect shorten
                                 stats]])
   (:gen-class))
@@ -16,9 +17,9 @@
 
 (defroutes routes
   (POST "/shorten" [] shorten)
-  (GET  "/statistics/:code" [code] (>>= code fetch-url stats))
-  (GET  "/expand/:code" [code] (>>= code fetch-url expand))
-  (GET  "/:code" [code] (>>= code fetch-url inc-stats redirect)))
+  (GET  "/statistics/:code" [code] (>>= code decode find-url stats))
+  (GET  "/expand/:code" [code] (>>= code decode find-url expand))
+  (GET  "/:code" [code] (>>= code decode find-url inc-stats redirect)))
 
 (def stop-server-fn (atom nil))
 

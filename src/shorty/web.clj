@@ -43,7 +43,7 @@
 
 (defn shorten [{:keys [params] :as req}]
   (if (valid? shorten-validator params)
-    (let [{:keys [id] :as url} (db/create-url (:url params))
+    (let [{:keys [id] :as url} (db/create-url (select-keys params [:url]))
           code (encode id)
           url* (assoc url :code code)]
       (future (db/update-url url*))

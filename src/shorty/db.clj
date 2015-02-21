@@ -8,14 +8,19 @@
                                   (env! :db :user :password))))
 
 (defentity urls
-  (fields :id :url :hits))
+  (fields :id :url :code :open_count))
 
 (defn create-url [url]
   (insert urls (values {:url url})))
 
 (defn increment-counter [id]
   (update urls
-          (set-fields {:hits (raw "urls.hits + 1")})
+          (set-fields {:hits (raw "urls.open_count + 1")})
+          (where {:id [= id]})))
+
+(defn update-url [{:keys [id] :as url}]
+  (update urls
+          (set-fields url)
           (where {:id [= id]})))
 
 (defn fetch-url [code]

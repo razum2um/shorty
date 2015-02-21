@@ -23,7 +23,7 @@ export PG_PASSWORD=$PG_PASS
 createdb $PG_DB -O $PG_USER
 createdb "${PG_DB}${PG_DB_SUFF}" -O $PG_USER
 
-SQL='CREATE TABLE urls (id SERIAL NOT NULL, url TEXT, hits INTEGER DEFAULT 0, CONSTRAINT urls_pkey PRIMARY KEY (id)); ALTER SEQUENCE urls_id_seq RESTART WITH 5000;'
+SQL='CREATE TABLE urls (id SERIAL NOT NULL, url TEXT NOT NULL, code TEXT, open_count INTEGER DEFAULT 0, CONSTRAINT urls_pkey PRIMARY KEY (id)); ALTER SEQUENCE urls_id_seq RESTART WITH 5000;'
 echo $SQL | psql $PG_DB -U $PG_USER
 echo $SQL | psql "${PG_DB}${PG_DB_SUFF}" -U $PG_USER
 

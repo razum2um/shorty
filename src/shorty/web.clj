@@ -20,11 +20,11 @@
 (defn not-found-resp [code]
   (resp 404 (str "No such code found: " code)))
 
-(defn show-code-resp [code]
+(defn show-code-resp [{:keys [code] :as row}]
   (resp 200 (str domain "/" code)))
 
-(defn-maybe stats [{:keys [hits] :as row}]
-  (resp 200 (str hits)))
+(defn-maybe stats [{:keys [open_count] :as row}]
+  (resp 200 (str open_count)))
 
 (defn-maybe expand [{:keys [url] :as row}]
   (resp 200  (str url)))
@@ -43,8 +43,11 @@
 
 (defn shorten [{:keys [params] :as req}]
   (if (valid? shorten-validator params)
-    (let [{:keys [id]} (db/create-url (:url params))]
-      (-> id encode show-code-resp))
+    (let [{:keys [id] :as url} (db/create-url (:url params))
+          code (encode id)
+          url* (assoc url :code code)]
+      (future (db/update-url url*))
+      (show-code-resp url*))
     (-> params shorten-validator error-resp)))
 
 (defmacro >>= [x & fns]

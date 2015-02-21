@@ -9,7 +9,7 @@
 (alter-var-root #'shorty.web/domain (constantly "http://some-doma.in"))
 
 (defn- as-params [url] {:params {:url url}})
-(defn- as-row [url] {:id 999 :hits 99 :url url})
+(defn- as-row [url] {:id 999 :open_count 99 :url url :code "123"})
 
 (defmacro with-stubs [[io-name io-val] & body]
   `(let [~io-name ~io-val]

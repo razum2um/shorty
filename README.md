@@ -54,6 +54,23 @@ Yet another URL shortening service. Meant for educational purposes.
     ;; build project for deploy
     lein uberjar
 
+## Benchmark
+
+    $ siege -b -q -r 50 -c 50 -i -f urls.txt
+
+    Transactions            : 3794 hits
+    Availability            : 100.00 %
+    Elapsed time            : 11.20 secs
+    Data transferred        : 32.14 MB
+    Response time           : 0.11 secs
+    Transaction rate        : 338.75 trans/sec
+    Throughput              : 2.87 MB/sec
+    Concurrency             : 37.88
+    Successful transactions : 3794
+    Failed transactions     : 0
+    Longest transaction     : 0.90
+    Shortest transaction    : 0.00
+
 ## License
 
 Copyright © 2015 Vlad Bokov

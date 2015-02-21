@@ -1,0 +1,4 @@
+127.0.0.1:8080/statistics/dgd
+127.0.0.1:8080/expand/dgd
+127.0.0.1:8080/dgd
+127.0.0.1:8080/shorten POST url=http://is.gd

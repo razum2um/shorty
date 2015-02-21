@@ -67,7 +67,7 @@
     (let [[_ url] (post! "/shorten" {:url "http://ya.ru?x=1&y=2"})
           code (s/replace url shorty.web/domain "")]
       (are [x y] (= x y)
-           [200 "http://ya.ru?x=1&y=2"]     (get! "/expand" code)
+           [200 "http://ya.ru?x=1&y=2"] (get! "/expand" code)
            [404 "No such code found: fake"] (get! "/expand" "/fake")))))
 
 (deftest statistics

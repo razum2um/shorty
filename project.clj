@@ -25,13 +25,24 @@
                                          [slamhound "1.5.5"]
                                          ;; [org.clojure/clojure "1.7.0-alpha5"]
                                          [org.clojure/tools.namespace "0.2.9"]
+                                         [org.clojars.razum2um/marginalia "0.8.1-SNAPSHOT"]
                                          [debugger "0.1.4"]
                                          [aprint "0.1.3"]]
+                          :plugins [[org.clojars.razum2um/lein-marginalia "0.8.1-SNAPSHOT"]]
                           :env {:port 8080 :cache 1}}
              :dev-overrides {} ;; see profiles.clj
              :test [:test-common :test-overrides]
              :test-common {:dependencies [[org.clojure/test.check "0.7.0"]]
                            :env {:port 7070 :test true :cache 1}}
              :test-overrides {}}
-  :jvm-opts ["-XX:-OmitStackTraceInFastThrow"])
+  :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]
+  :marginalia {:ordering ["src/shorty/core.clj"
+                          "src/shorty/coder.clj"
+                          "src/shorty/db.clj"
+                          "src/shorty/web.clj"
+                          "src/shorty/utils.clj"
+                          "test/shorty/coder_test.clj"
+                          "test/shorty/db_test.clj"
+                          "test/shorty/web_test.clj"
+                          "test/shorty/core_test.clj"]})
 

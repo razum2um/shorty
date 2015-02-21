@@ -5,6 +5,7 @@
             [korma.core :refer :all]
             [shorty.db :refer :all]))
 
+;; ### Макрос - основное эквивалент `before/alter` блоков
 (defmacro with-clean-db [& body]
   `(try
      (jdbc/db-do-commands jdbc-spec "TRUNCATE urls;")

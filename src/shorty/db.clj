@@ -1,9 +1,9 @@
+;; ## Model layer
 (ns shorty.db
   (:require [korma.core :refer :all]
             [korma.db :refer :all]
             [environ.core :refer [env]]
-            [shorty.coder :refer [decode]]
-            [shorty.utils :refer [env!]]))
+            [shorty.coder :refer [decode]]))
 
 (def db-host (or (env :host) "localhost"))
 

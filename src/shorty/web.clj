@@ -1,3 +1,4 @@
+;; ## Controller & View layers
 (ns shorty.web
   (:require [validateur.validation :refer :all]
             [clojure.string :refer [join]]
@@ -7,6 +8,8 @@
             [shorty.db :as db]
             [shorty.utils :refer [defn-maybe presence url-validator]]))
 
+;; `^:dynamic` - знак для того, чтобы иметь возможность переопределять
+;; переменную в скопе теста с помощью `binding`
 (def ^:dynamic domain "http://some-doma.in")
 
 (defn resp

@@ -9,6 +9,7 @@
 (defn- as-params [url] {:params {:url url}})
 (defn- as-row [url] {:id 999 :open_count 99 :url url :code "123"})
 
+;; ### Изоляция зависимотей
 (defmacro with-stubs [[io-name io-val] & body]
   `(let [~io-name ~io-val]
      (with-redefs [shorty.db/create-url (fn [~'_] {:id (swap! ~io-name inc)})

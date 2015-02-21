@@ -9,13 +9,13 @@
 (alter-var-root #'shorty.web/domain (constantly "http://some-doma.in"))
 
 (defn- as-params [url] {:params {:url url}})
-(defn- as-row [url] {:id 999 :hits 0 :url url})
+(defn- as-row [url] {:id 999 :hits 99 :url url})
 
 (defmacro with-stubs [[io-name io-val] & body]
   `(let [~io-name ~io-val]
      (with-redefs [shorty.db/create-url (fn [~'_] {:id (swap! ~io-name inc)})
                    shorty.db/increment-counter (fn [~'_] {:id (swap! ~io-name inc)})
-                   clojure.core/future identity]
+                   clojure.core/future (fn [~'f] ~'f)]
        ~@body)))
 
 (deftest shorten-success
@@ -41,19 +41,19 @@
     (is (= 2 @db))))
 
 (deftest maybe-chain-success
-  (with-stubs [db (atom 0)]
-    (is (= {:status 302, :headers {"Location" "http://ya.ru"}, :body "Redirected to http://ya.ru"}
-           (>>= "http://ya.ru" as-row redirect)))
+  (with-stubs [db (atom 99)]
+    (is (= (resp 302 {"Location" "http://ya.ru"} "Redirected to http://ya.ru")
+           (>>= "http://ya.ru" as-row inc-stats redirect)))
 
-    (is (= {:status 200, :body "http://ya.ru"}
+    (is (= (resp 200 "http://ya.ru")
            (>>= "http://ya.ru" as-row expand)))
 
-    (is (= {:id 999, :hits 0, :url "http://ya.ru"}
-           (>>= "http://ya.ru" as-row inc-stats)))))
+    (is (= (resp 200 "99")
+           (>>= "http://ya.ru" as-row stats)))))
 
 (deftest maybe-chain-fallback
   (let [fail-fn (constantly nil)]
-    (is (= {:status 404, :body "No such code found: 1"} (>>= 1 fail-fn redirect)))
-    (is (= {:status 404, :body "No such code found: 2"} (>>= 2 fail-fn expand)))
-    (is (= {:status 404, :body "No such code found: 3"} (>>= 3 fail-fn inc-stats)))))
+    (is (= (resp 404 "No such code found: 1") (>>= 1 fail-fn redirect)))
+    (is (= (resp 404 "No such code found: 2") (>>= 2 fail-fn expand)))
+    (is (= (resp 404 "No such code found: 3") (>>= 3 fail-fn inc-stats)))))
 

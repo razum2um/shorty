@@ -39,6 +39,9 @@ Yet another URL shortening service. Meant for educational purposes.
     ;; run all tests
     (clojure.test/run-all-tests)
 
+    ;; update settings
+    (alter-var-root #'environ.core/env #(merge % {:db "shorty_test" :user "razum2um" :password ""}))
+
     ;; disconnect from db
     (do (if-let [p (-> korma.db/_default deref :pool)] (-> p deref :datasource .close)) (reset! korma.db/_default nil))
 

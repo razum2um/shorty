@@ -1,13 +1,18 @@
 (ns shorty.db-test
   (:require [clojure.test :refer :all]
+            [clojure.java.jdbc :as jdbc]
             [korma.db :refer :all]
             [korma.core :refer :all]
             [shorty.db :refer :all]))
 
 (defmacro with-clean-db [& body]
-  `(transaction
+  `(try
+     (jdbc/db-do-commands jdbc-spec "TRUNCATE urls;")
+     (jdbc/db-do-commands jdbc-spec "ALTER SEQUENCE urls_id_seq RESTART WITH 5000;")
      ~@body
-     (rollback)))
+     (finally
+       (jdbc/db-do-commands jdbc-spec "TRUNCATE urls;")
+       )))
 
 (deftest insertion
   (with-clean-db

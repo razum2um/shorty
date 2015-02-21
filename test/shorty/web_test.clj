@@ -6,8 +6,6 @@
             [shorty.web :refer :all]
             [shorty.utils :refer [defn-maybe]]))
 
-(alter-var-root #'shorty.web/domain (constantly "http://some-doma.in"))
-
 (defn- as-params [url] {:params {:url url}})
 (defn- as-row [url] {:id 999 :open_count 99 :url url :code "123"})
 
@@ -21,10 +19,13 @@
 
 (deftest shorten-success
   (with-stubs [db (atom 12345)]
-    (are [x y] (= x (-> y as-params shorten ((juxt :status :body))))
-         [200 "http://some-doma.in/hjY"]  "http://ya.ru"
-         [200 "http://some-doma.in/hjZ"]  "https://ya.ru"
-         )))
+    (are [x y]
+         (let [[http-code code] x
+               resp (-> y as-params shorten)]
+           (and (= http-code (:status resp))
+                (re-find code (:body resp))))
+         [200 #"hjY"]  "http://ya.ru"
+         [200 #"hjZ"]  "https://ya.ru")))
 
 (deftest shorten-fail
   (with-stubs [db (atom 12345)]

@@ -27,12 +27,14 @@
   (when (and @stop-server-fn (fn? @stop-server-fn))
     (@stop-server-fn :timeout 100)))
 
-(defn start []
-  (reset! stop-server-fn
-          (http/run-server (-> #'routes
-                               (wrap-defaults api-defaults)
-                               wrap-with-logger)
-                           {:port (or (:port env) 8080)})))
+(defn start
+  ([] (start nil))
+  ([port]
+   (reset! stop-server-fn
+           (http/run-server (-> #'routes
+                                (wrap-defaults api-defaults)
+                                wrap-with-logger)
+                            {:port (or port (:port env) 8080)}))))
 
 (defn -main
   "I don't do a whole lot ... yet."

@@ -30,7 +30,7 @@
              :dev-overrides {} ;; see profiles.clj
              :test [:test-common :test-overrides]
              :test-common {:dependencies [[org.clojure/test.check "0.7.0"]]
-                           :env {:port 7070}}
+                           :env {:port 7070 :test true}}
              :test-overrides {}}
   :jvm-opts ["-XX:-OmitStackTraceInFastThrow"])
 

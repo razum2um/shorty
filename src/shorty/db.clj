@@ -1,11 +1,19 @@
 (ns shorty.db
   (:require [korma.core :refer :all]
             [korma.db :refer :all]
+            [environ.core :refer [env]]
             [shorty.coder :refer [decode]]
             [shorty.utils :refer [env!]]))
 
-(defdb shorty-db (postgres (merge {:make-pool? true}
-                                  (env! :db :user :password))))
+(def db-host (or (env :host) "localhost"))
+
+(def jdbc-spec (merge {:classname "org.postgresql.Driver"
+                       :subprotocol "postgresql"
+                       :subname (str "//" db-host "/" (env! :db))}
+                      (env! :db :user :password)))
+
+(defdb shorty-db (postgres (merge {:make-pool? (not (:test env))}
+                                  jdbc-spec)))
 
 (defentity urls
   (fields :id :url :code :open_count))
@@ -15,7 +23,7 @@
 
 (defn increment-counter [id]
   (update urls
-          (set-fields {:hits (raw "urls.open_count + 1")})
+          (set-fields {:open_count (raw "urls.open_count + 1")})
           (where {:id [= id]})))
 
 (defn update-url [{:keys [id] :as url}]

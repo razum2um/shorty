@@ -18,7 +18,7 @@
 (log/start! log)
 (log/set-debug!)
 
-(def lru-threshold (or (:cache env) 10000))
+(def lru-threshold (or (:cache env) 500))
 (def decode* (memo/lru decode :lru/threshold lru-threshold))
 (def find-url* (memo/lru find-url :lru/threshold lru-threshold))
 (def decode+find-url (comp find-url* decode*))

@@ -14,6 +14,7 @@
 (defmacro with-stubs [[io-name io-val] & body]
   `(let [~io-name ~io-val]
      (with-redefs [shorty.db/create-url (fn [~'_] {:id (swap! ~io-name inc)})
+                   shorty.db/update-url (fn [~'_] 1)
                    shorty.db/increment-counter (fn [~'_] {:id (swap! ~io-name inc)})
                    clojure.core/future (fn [~'f] ~'f)]
        ~@body)))

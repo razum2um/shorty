@@ -37,10 +37,10 @@
              :test-overrides {}}
   :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]
   :marginalia {:ordering ["src/shorty/core.clj"
+                          "src/shorty/utils.clj"
                           "src/shorty/coder.clj"
                           "src/shorty/db.clj"
                           "src/shorty/web.clj"
-                          "src/shorty/utils.clj"
                           "test/shorty/coder_test.clj"
                           "test/shorty/db_test.clj"
                           "test/shorty/web_test.clj"

@@ -46,10 +46,21 @@ Yet another URL shortening service. Meant for educational purposes.
     (clojure.test/run-all-tests)
 
     ;; update settings
-    (alter-var-root #'environ.core/env #(merge % {:db "shorty_test" :user "razum2um" :password ""}))
+    (alter-var-root #'environ.core/env
+                    #(merge % {:db "foo" :user "bar" :password "baz"}))
 
     ;; disconnect from db
-    (do (if-let [p (-> korma.db/_default deref :pool)] (-> p deref :datasource .close)) (reset! korma.db/_default nil))
+    (do (if-let [p (-> korma.db/_default deref :pool)]
+        (-> p deref :datasource .close))
+        (reset! korma.db/_default nil))
+
+    ;; generate docs
+    (marginalia.core/run-marginalia
+      ["-c" "style.css"]
+      {:marginalia {:ordering ["src/shorty/core.clj" "src/shorty/utils.clj" "src/shorty/coder.clj"
+                               "src/shorty/db.clj" "src/shorty/web.clj"
+                               "test/shorty/coder_test.clj" "test/shorty/db_test.clj"
+                               "test/shorty/web_test.clj" "test/shorty/core_test.clj"]}})
 
     ;; build project for deploy
     lein uberjar

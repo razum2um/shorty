@@ -14,7 +14,7 @@
 
 ;; Quick check в Haskell, EQS в Erlang, ScalaCheck в Scala
 ;; 100 - это количество попыток "взломать" тест
-;; [видеообзор от автора](http://youtu.be/JMhNINPo__g) (на английском)
+;; [видеообзор от автора](http://youtu.be/JMhNINPo__g)
 (defspec roundtrip 100
   (prop/for-all [i gen/pos-int]
                 (= i (decode (encode i)))))

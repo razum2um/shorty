@@ -1,4 +1,7 @@
 ;; ## Controller & View layers
+;;
+;; В данном конкретном проекте ответы сервера очень просты и не требуют
+;; шаблонов, поэтому можно рассматривать их вместе с "контроллерами" (в терминах Rails).
 (ns shorty.web
   (:require [validateur.validation :refer :all]
             [clojure.string :refer [join]]

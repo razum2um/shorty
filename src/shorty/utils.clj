@@ -1,10 +1,12 @@
 ;; ## Java interop
 ;;
 ;; Clojure очень тесно связан с JVM платформой.
+;; Можно импортировать любой класс и инстанцировать или вызывать методы без оберток.
 (ns shorty.utils
   (:import [org.apache.commons.validator.routines UrlValidator]))
 
-;; Обратите внимание на `~'_`
+;; Обратите внимание на `~'_` - это специальный прием, чтобы при раскрытии макроса символ
+;; не обретал `fully qualified name`, т.е. префикс неймспейса.
 (defmacro defn-maybe [x & body]
   `(do (defmulti ~x class)
        (defmethod ~x nil [~'_] nil)

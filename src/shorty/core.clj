@@ -1,6 +1,6 @@
 ;; # Сокращалка URL или практическое введение  в Clojure
 ;;
-;; <form action="/shorten" method="POST"><input name="url" placeholder="Исходная ссылка" required><button>Сократить</button></form>
+;; <form id="shorten" action="/shorten" method="POST"><input name="url" placeholder="Исходная ссылка" required><button type="submit">Сократить</button></form>
 ;; <div id="result" style="display: none"><span>Сокращенная ссылка:</span><span id="shortened"></span></div>
 ;;
 ;; После того, как мы разберем, как это написано и как работает, я думаю, что вы сможете
@@ -13,7 +13,7 @@
 ;; посмотрите исходники скала-библиотек - *slick*, например (а потом библиотекой может оказаться код модуля
 ;; в *вашем* проекте, который писали не вы).
 ;;
-;; Однако главной задачей этого введения является не только ознакомить,
+;; Однако главной задачей этого введения является не только рассмотреть ключевые осебенности языка,
 ;; но и показать инструменты, с помощью которых дальнейшие самостоятельные шаги в мире Clojure
 ;; будут приятны и осознаны.
 ;;
@@ -44,6 +44,7 @@
 ;;     (clojure.tools.namespace.repl/refresh)
 (ns shorty.core
   (:require [compojure.core :refer [GET POST defroutes routes]]
+            [compojure.route :refer [resources not-found]]
             [environ.core :refer [env]]
             [onelog.core :as log]
             [org.httpkit.server :as http]
@@ -268,8 +269,10 @@
 ;; "сверху-вниз", т.е. сначала REQUEST_URI будет сопоставляться с `/shorten`
 (defroutes all-routes
   (routes
+    (resources "/")
     post-routes
-    code-routes))
+    code-routes
+    (not-found "Not found")))
 
 ;; `atom` - это один из 3х способов обрабатывать состояние в Clojure. Подробнее о нем и
 ;; остальных вы можете на [отличном докладе Николая Рыжикова](http://youtu.be/nfKrSI7OQnI?t=2h21m1s)
@@ -281,7 +284,7 @@
              (fn? @stop-server-fn))
     (@stop-server-fn :timeout 100)))
 
-;; Функция в Clojure может принимать разное количество аргументов
+;; Функция в Clojure может диспатчиться по-разному в зависимости от количество аргументов
 (defn start
   ([] (start nil))
   ([port]

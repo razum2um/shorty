@@ -18,7 +18,9 @@
 ;;     ([10 20] 1)  ;; => 20
 ;;     (alphabet (rem i base)
 ;;
-;; Также, можно самостоятельно реализовать `IFn` для своего "класса" - `defrecord`
+;; Также само собой разумеется, что set, sequence, vector, hash-map (и любой свой defrecord)
+;; универсально обрабатываются в map/filter (интерфейс ISeq). В отличие, например, от Go, где
+;; до сих пор [нет универсального итератора](https://groups.google.com/forum/#!topic/golang-nuts/v6m86sTRbqA)
 (def alphabet (vec "bcdfghjkmnpqrstvwxyz23456789BCDFGHJKLMNPQRSTVWXYZ"))
 (def base (count alphabet))
 
@@ -27,7 +29,7 @@
 ;; Основными заменами инмперативным циклам `for` являются идеология `map/filter/reduce`, а
 ;; также рекурсивные вызовы. Если вы знакомы с JVM, то знаете, что платформа не делает хвостовую
 ;; оптимизацию рекурсии, и все же в Clojure можно писать рекурсии, не подверженные StackOverfow
-;; с помощью функций `loop` `recur`
+;; с помощью функций `loop` и `recur`, которые внутри транслируются в `while` цикл.
 (defn decode [s]
   (loop [id 0 acc (seq s)]
     (if-let [[chr & tail] acc]

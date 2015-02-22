@@ -2873,14 +2873,13 @@ net.brehaut.ClojureTools = (function (SH) {
 <div id="result" style="display: none"><span>Сокращенная ссылка:</span><span id="shortened"></span></div>
 
 <p>После того, как мы разберем, как это написано и как работает, я думаю, что вы сможете
-писать на Clojure, причем на достаточно <em>адекватном</em> уровне (подразумевая, что вы умеете программировать, конечно).
+писать на Clojure, причем на достаточно <em>адекватном</em> уровне
 Я подчеркиваю это, потому что есть много руководств по Scala, которые обещают вам быстрое "погружение",
 но на самом деле все сложно :)</p>
 
 <p>Порог вхождения у <em>идеоматичной</em> Scala намного выше, чем у Clojure (я писал на обоих). И я уверен,
 что вам должно хватить этого введения, чтобы разобраться в коде <em>любой</em> pure-clojure библиотеки, а потом
-посмотрите исходники скала-библиотек - <em>slick</em>, например (а потом библиотекой может оказаться код модуля
-в <em>вашем</em> проекте, который писали не вы).</p>
+посмотрите исходники скала-библиотек - <em>slick</em>, например.</p>
 
 <p>Однако главной задачей этого введения является не только рассмотреть ключевые осебенности языка,
 но и показать инструменты, с помощью которых дальнейшие самостоятельные шаги в мире Clojure
@@ -3136,11 +3135,17 @@ from foo import bar
   (GET  &quot;/statistics/:code&quot; [code] (&gt;&gt;= code decode* find-url stats))
   (GET  &quot;/expand/:code&quot;     [code] (&gt;&gt;= code decode+find-url expand))
   (GET  &quot;/:code&quot;            [code] (&gt;&gt;= code decode+find-url inc-stats redirect)))</pre></td></tr><tr><td class="docs"><p>Роуты композитятся так же легко как и функции. Сопоставление будет происходить
-"сверху-вниз", т.е. сначала REQUEST_URI будет сопоставляться с <code>/shorten</code></p>
+"сверху-вниз", т.е. сначала REQUEST_URI будет сопоставляться с <code>/shorten</code>, затем
+статика из ресурсов (<code>/...js</code>, <code>/..css</code>, <code>/index.html</code>),
+потом глобальный "fallback", под который попадет только голый <code>/</code>
+но этот роут исправится на <code>/index.html</code> через <code>nginx</code>.</p>
+
+<p>Гарантией того, что статичных роутов не может быть равно коду,
+является алфавит без гласных.</p>
 </td><td class="codes"><pre class="brush: clojure">(defroutes all-routes
   (routes
-    (resources &quot;/&quot;)
     post-routes
+    (resources &quot;/&quot;)
     code-routes
     (not-found &quot;Not found&quot;)))</pre></td></tr><tr><td class="docs"><p><code>atom</code> - это один из 3х способов обрабатывать состояние в Clojure. Подробнее о нем и
 остальных вы можете на <a href="http://youtu.be/nfKrSI7OQnI?t=2h21m1s">отличном докладе Николая Рыжикова</a>
@@ -3338,6 +3343,7 @@ DETAIL:  parameters: $1 = 'http://is.gd'
 шаблонов, поэтому можно рассматривать их вместе с "контроллерами" (в терминах Rails).</p>
 </td><td class="codes"><pre class="brush: clojure">(ns shorty.web
   (:require [validateur.validation :refer :all]
+            [environ.core :refer [env]]
             [clojure.string :refer [join]]
             [clojure.set :refer [union]]
             [onelog.core :as log]
@@ -3345,7 +3351,7 @@ DETAIL:  parameters: $1 = 'http://is.gd'
             [shorty.db :as db]
             [shorty.utils :refer [defn-maybe presence url-validator]]))</pre></td></tr><tr><td class="docs"><p><code>^:dynamic</code> - знак для того, чтобы иметь возможность переопределять
 переменную в скопе теста с помощью <code>binding</code></p>
-</td><td class="codes"><pre class="brush: clojure">(def ^:dynamic domain &quot;http://some-doma.in&quot;)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def ^:dynamic domain (or (:domain env) &quot;http://127.0.0.1&quot;))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn resp
   ([code body] (resp code {&quot;Content-Type&quot; &quot;text/plain&quot;} body))
   ([code headers body]

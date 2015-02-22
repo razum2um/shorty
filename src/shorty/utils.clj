@@ -15,7 +15,7 @@
 ;;
 ;;     (def presence (fn [x] (if (empty? x) nil x)))
 (defn presence [x]
-  (if (empty? x) nil x))
+  (if (nil? x) nil x))
 
 ;; ### Переменные
 ;;

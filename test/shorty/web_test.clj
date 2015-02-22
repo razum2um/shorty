@@ -15,7 +15,7 @@
      (with-redefs [shorty.db/create-url (fn [~'_] {:id (swap! ~io-name inc)})
                    shorty.db/update-url (fn [~'_] 1)
                    shorty.db/increment-counter (fn [~'_] {:id (swap! ~io-name inc)})
-                   clojure.core/future (fn [~'f] ~'f)]
+                   clojure.core/future (fn [~'f] (if (fn? ~'f) (~'f) ~'f))]
        ~@body)))
 
 (deftest shorten-success

@@ -65,6 +65,9 @@ Yet another URL shortening service. Meant for educational purposes.
     ;; build project for deploy
     lein uberjar
 
+    ;; run test (bash) after ./setup.sh
+    DB="shorty_test" lein with-profile +test test
+
 ## Benchmark
 
     $ siege -b -q -r 50 -c 50 -i -f urls.txt

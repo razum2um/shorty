@@ -1,5 +1,6 @@
 ;; ## Алгоритм сокращения
-(ns shorty.coder)
+(ns shorty.coder
+  (:require [environ.core :refer [env]]))
 
 ;; Замечательным свойством Clojure является инплементация протокола `IFn`
 ; для почти всех базовых типов. Так вектор является фукцией и возвращает
@@ -21,7 +22,7 @@
 ;; Также само собой разумеется, что set, sequence, vector, hash-map (и любой свой defrecord)
 ;; универсально обрабатываются в map/filter (интерфейс ISeq). В отличие, например, от Go, где
 ;; до сих пор [нет универсального итератора](https://groups.google.com/forum/#!topic/golang-nuts/v6m86sTRbqA)
-(def alphabet (vec "jdxXVYrtpv3k7BFsMyzNbh9wqRcJS865WKCGT2L4mDfgZHPQn"))
+(def alphabet (vec (or (:alphabet env) "jdxXVYrtpv3k7BFsMyzNbh9wqRcJS865WKCGT2L4mDfgZHPQn")))
 (def base (count alphabet))
 
 ;; ### Рекурсия

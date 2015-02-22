@@ -33,7 +33,8 @@
              :dev-overrides {} ;; see profiles.clj
              :test [:test-common :test-overrides]
              :test-common {:dependencies [[org.clojure/test.check "0.7.0"]]
-                           :env {:port 7070 :test true :cache 1}}
+                           :env {:port 7070 :test true :cache 1
+                                 :alphabet "bcdfghjkmnpqrstvwxyz23456789BCDFGHJKLMNPQRSTVWXYZ"}}
              :test-overrides {}}
   :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]
   :marginalia {:ordering ["src/shorty/core.clj"

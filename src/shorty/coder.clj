@@ -21,7 +21,7 @@
 ;; Также само собой разумеется, что set, sequence, vector, hash-map (и любой свой defrecord)
 ;; универсально обрабатываются в map/filter (интерфейс ISeq). В отличие, например, от Go, где
 ;; до сих пор [нет универсального итератора](https://groups.google.com/forum/#!topic/golang-nuts/v6m86sTRbqA)
-(def alphabet (vec "bcdfghjkmnpqrstvwxyz23456789BCDFGHJKLMNPQRSTVWXYZ"))
+(def alphabet (vec "jdxXVYrtpv3k7BFsMyzNbh9wqRcJS865WKCGT2L4mDfgZHPQn"))
 (def base (count alphabet))
 
 ;; ### Рекурсия

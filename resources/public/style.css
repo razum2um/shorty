@@ -1,0 +1,30 @@
+table td.docs {
+  width: 650px;
+  max-width: 650px;
+}
+
+table td.codes {
+  padding-top: 10px;
+}
+
+td.docs > p:first-child, td.docs > h3:first-child {
+  padding-top: 10px;
+  border-top: 1px dotted rgba(0, 0, 0, 0.2);
+}
+
+#result, form {
+  padding-left: 10px;
+  padding-top: 10px;
+}
+
+form input {
+  width: 450px;
+}
+
+form button {
+  margin-left: 10px;
+}
+
+#result span {
+  margin-right: 10px;
+}

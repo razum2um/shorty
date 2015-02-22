@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8" content="text/html" http-equiv="Content-Type" /><meta name="description" /><style type="text/css"></style><style type="text/css">.syntaxhighlighter{overflow:hidden !important;}</style><style type="text/css"></style><style type="text/css">html{padding:0;margin:0;}h1{padding:0;margin:0;}h2{padding:0;margin:0;}h3{padding:0;margin:0;}h4{padding:0;margin:0;}a{color:#261A3B;}a:visited{color:#261A3B;}</style><style type="text/css">.header{margin-top:30px;}h1.project-name{font-size:34px;display:inline;}h2.project-version{font-size:18px;margin-left:10px;margin-top:0;display:inline;}.toc-link{color:#252519;font-size:12px;margin-left:10px;text-decoration:none;}.toc-link:hover{color:#5050A6;}.toc h1{font-size:34px;margin:0;}.docs-header{padding-bottom:10px;margin-bottom:25px;border-bottom:dotted #aaa 1px;}.toc h1{font-size:24px;}.toc{margin-bottom:40px;border-bottom:solid #bbb 1px;}.toc ul{margin-left:20px;margin-top:0;padding-top:0;padding-left:0px;}.toc li{list-style-type:none;padding-left:0;}.dependencies{}.dependencies table{font-size:16px;margin-left:20px;width:99.99%;border:none;}.dependencies td{white-space:nowrap;padding-right:20px;;}.dependencies .dotted{width:99%;}.dependencies .dotted hr{border-right:none;color:transparent;background-color:transparent;noshade:noshade;border-left:none;border-top:none;margin-bottom:-6px;height:0;border-bottom:dotted #bbb 1px;}.dependencies .dep-version{text-align:right;}.plugins ul{margin-left:20px;margin-top:0;padding-top:0;padding-left:0px;}.plugins li{list-style-type:none;padding-left:0;}.header p{margin-left:20px;}</style><style type="text/css">#floating-toc{text-align:right;top:10px;overflow:hidden;right:20px;position:fixed;height:20px;}#floating-toc li{list-style-type:none;padding:0;margin:0;}</style><style type="text/css">body{color:#252519;font-size:16px;background-color:#F5F5FF;padding:0;font-family:'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;;margin:0;}h1{font-size:20px;margin-top:0;}h2{font-size:18px;}h3{font-size:16px;}a.anchor{color:#252519;text-decoration:none;}a.anchor:hover{color:#5050A6;}table{border-spacing:0;margin-bottom:10px;border-bottom:solid #ddd 1px;;}code{display:inline;}p{margin-top:8px;}tr{padding:0px;margin:0px;}td.docs{vertical-align:top;background-color:#FFF;width:410px;max-width:410px;padding-right:20px;padding-left:55px;border:none;margin:0px;}td.docs pre{font-size:12px;overflow:hidden;}td.codes{vertical-align:top;font-size:10pt;overflow:hidden;background-color:#F5F5FF;width:55%;border-left:solid #E5E5EE 1px;padding-left:20px;border:none;margin:0px;}td.spacer{padding-bottom:40px;}pre code{padding:4px;display:block;}code{font-size:14px;background-color:ghostWhite;padding-right:3px;padding-left:3px;border:solid #DEDEDE 1px;}.syntaxhighlighter code{font-size:13px;}.footer{text-align:center;}</style><script type="text/javascript"></script><script type="text/javascript"></script><script type="text/javascript"></script><script type="text/javascript"></script><link href="style.css" rel="stylesheet" tyle="text/css" /><title> -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name"></h1><h2 class="project-version"></h2><br />
+</div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#shorty.core">shorty.core</a></li><li><a href="#shorty.utils">shorty.utils</a></li><li><a href="#shorty.coder">shorty.coder</a></li><li><a href="#shorty.db">shorty.db</a></li><li><a href="#shorty.web">shorty.web</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#shorty.core" name="shorty.core"><h1 class="project-name">shorty.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>Сокращалка URL или практическое введение  в Clojure</h1>
+
+<form id="shorten" action="http://127.0.0.1:8080/shorten" method="POST"><input name="url" placeholder="Исходная ссылка" required><button type="submit">Сократить</button></form>
+
+<div id="result" style="display: none"><span>Сокращенная ссылка:</span><span id="shortened"></span></div>
+
+<p>После того, как мы разберем, как это написано и как работает, я думаю, что вы сможете
+писать на Clojure, причем на достаточно <em>адекватном</em> уровне (подразумевая, что вы умеете программировать, конечно).
+Я подчеркиваю это, потому что есть много руководств по Scala, которые обещают вам быстрое "погружение",
+но на самом деле все сложно :)</p>
+
+<p>Порог вхождения у <em>идеоматичной</em> Scala намного выше, чем у Clojure (я писал на обоих). И я уверен,
+что вам должно хватить этого введения, чтобы разобраться в коде <em>любой</em> pure-clojure библиотеки, а потом
+посмотрите исходники скала-библиотек - <em>slick</em>, например (а потом библиотекой может оказаться код модуля
+в <em>вашем</em> проекте, который писали не вы).</p>
+
+<p>Однако главной задачей этого введения является не только рассмотреть ключевые осебенности языка,
+но и показать инструменты, с помощью которых дальнейшие самостоятельные шаги в мире Clojure
+будут приятны и осознаны.</p>
+
+<h2>Core</h2>
+
+<p>Как правило все либы и приложения на Clojure имеют namespace <code>core</code>
+и разбор следует начинать с него.</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>По факту <code>ns</code> - макрос (как и <code>defn</code>, между прочим, но о них чуть ниже), который обслуживает импорты
+это не более, чем принятый порядок. Например, в Python:</p>
+
+<pre><code>import foo
+from foo import bar
+</code></pre>
+
+<p>В любой момент можно сделать как в REPL так и в файле (но только для библиотек-зависимостей проекта):</p>
+
+<pre><code>(require '[shorty.db :as db :refer [find-url]])
+</code></pre>
+
+<p>О файле <code>project.clj</code> также будет несколько слов ниже, а пока обратите внимание на <code>'</code> в консольном варианте.
+Однако, чтобы поиграть с либой в REPL не надо торопиться руками импортировать все, а затем перезаругжать 
+их после изменения файлов. Для этого существует прекрасная библиотека <code>tools.namespace</code>
+и она подключена к этому проекту, поэтому запустите REPL из корня репозитория
+(предварительно <a href="http://leiningen.org/">установив lein</a>):</p>
+
+<pre><code>lein repl
+</code></pre>
+
+<p>и выполните (после этого вы сможете копировать и пробовать у себя команды ниже):</p>
+
+<pre><code>(clojure.tools.namespace.repl/refresh)
+</code></pre>
+</td><td class="codes"><pre class="brush: clojure">(ns shorty.core
+  (:require [compojure.core :refer [GET POST defroutes routes]]
+            [environ.core :refer [env]]
+            [onelog.core :as log]
+            [org.httpkit.server :as http]
+            [ring.middleware.defaults :refer [api-defaults
+                                              wrap-defaults]]
+            [ring.middleware.logger :refer [wrap-with-logger]]
+            ;; импорт определенных функций из namespace
+            [shorty.coder :refer [decode]]
+            ;; или alias для него
+            [clojure.core.memoize :as memo]
+            ;; возможны оба варианта сразу
+            [shorty.db :as db :refer [find-url]]
+            [shorty.web :refer [&gt;&gt;= expand inc-stats redirect shorten
+                                stats]])
+  ;; дань JVM, обязательная для того, чтобы можно было скомпилировать `jar`
+  ;; со входной точкой = этим классом и методом `-main` в нем
+  (:gen-class))</pre></td></tr><tr><td class="docs"><h3>Константы и функции</h3>
+
+<p>Для определения используется <code>def</code>, а знак <code>=</code> является функцией сравнения:</p>
+
+<pre><code>(= 2 2 2) ;; =&gt; true
+(= 1 1.0) ;; =&gt; false
+</code></pre>
+
+<p>В этом можно убедиться так:</p>
+
+<pre><code>(clojure.repl/source =)
+
+(defn =
+  "Equality. Returns true if x equals y, false if not. Same as
+  Java x.equals(y) except it also works for nil, and compares
+  numbers and collections in a type-independent manner.  Clojure's immutable data
+  structures define equals() (and thus =) as a value, not an identity,
+  comparison."
+  {:inline (fn [x y] `(. clojure.lang.Util equiv ~x ~y))
+   :inline-arities #{2}
+   :added "1.0"}
+  ([x] true)
+  ([x y] (clojure.lang.Util/equiv x y))
+  ([x y &amp; more]
+   (if (clojure.lang.Util/equiv x y)
+     (if (next more)
+       (recur y (first more) (next more))
+       (clojure.lang.Util/equiv y (first more)))
+     false)))
+</code></pre>
+
+<p>В принципе, код любой pure-clojure функции можно так происпектировать как из
+любопытства, так и чтобы быстро вспомнить сигнатуру функции.</p>
+
+<p>О том, что использовать вместо императивного <code>x = 1</code>, речь ниже.</p>
+</td><td class="codes"><pre class="brush: clojure">(def log &quot;log/shorty.log&quot;)</pre></td></tr><tr><td class="docs"><h3>Префиксная нотация</h3>
+
+<pre><code>(or (:cache env) 500)
+</code></pre>
+
+<p>Это то, что может беспокоить в начале (помимо скобочек, естественно):
+функции, операторы (которые, вообще-то тоже или функции, или макросы)
+и методы Java-объектов приходится писать на первом месте (ниже я покажу как с этим бороться)
+вместо привычного:</p>
+
+<pre><code>pred1 || pred2 || pred3
+</code></pre>
+
+<p>Префиксная нотация в отличие от операторов в середине это не накладывает ограничение на количество:</p>
+
+<pre><code>(or pred1 pred2 pred3)
+</code></pre>
+
+<p>А конкретно для логических операторов это может быть полезнее с точки зрения читателя.
+Что легче понять (пример на Ruby):</p>
+
+<pre><code>(puts "1") &amp;&amp; (puts "2") or (puts "3") || (puts "4") and (puts "5")
+</code></pre>
+
+<p>или</p>
+
+<pre><code>(or (and (println "1") (println "2"))
+    (println "3")
+    (and (println "4") (println "5")))
+</code></pre>
+
+<p>Поэтому, если вы думаете о том самом маньяке, который знает, где вы живете,
+то все равно напишите скобочки даже в императивном коде:</p>
+
+<pre><code>(((puts "1") &amp;&amp; (puts "2")) or (puts "3")) || ((puts "4") and (puts "5"))
+</code></pre>
+</td><td class="codes"><pre class="brush: clojure">(def lru-threshold (or (:cache env) 500))</pre></td></tr><tr><td class="docs"><h3>Вызов функции</h3>
+
+<p>Более того, в Clojure, делая макрос, вы можете быть уверенными, что в начале каждого
+уровня следует функция.</p>
+</td><td class="codes"><pre class="brush: clojure">(log/start! log)</pre></td></tr><tr><td class="docs"><h3>Debug</h3>
+
+<p>Вначале весьма сложно разобраться в "выхлопе" stacktrace, непонятных ошибках и весьма нехватает всей мощи брекпойнтов
+в теплой ламповой IDE. Скажу честно, дела с поддержкой Clojure в традиционных Java IDE еще неважны. Основной
+вектор развития направлен на <a href="https://github.com/clojure-emacs/cider">cider</a> проект для Emacs.</p>
+
+<p>C дебаггерами в экосистеме еще хуже :(
+Есть попытка решить эту проблему в виде библиотеки <a href="https://github.com/razum2um/clj-debugger">debugger</a>,
+но она пока очень ограничена в возможностях.</p>
+
+<p>В общем, хорошее логгирование - это наше все :) Однако и тут лучше сразу использовать
+<a href="https://github.com/razum2um/aprint">aprint</a> вместо стандартных <code>println</code>
+или <code>clojure.pprint/pprint</code> для "ad-hoc" дебага, или <a href="https://github.com/pjlegato/onelog">одну</a>
+<a href="https://github.com/ptaoussanis/timbre">из</a> <a href="https://github.com/clojure/tools.logging">систем</a> логгирования.</p>
+
+<p>Сборники ссылок на библиотеки по категориям (в том числе для дебага) можно найти в списке
+<a href="https://github.com/razum2um/awesome-clojure">awesome-clojure</a> и в <a href="http://www.clojure-toolbox.com">clojure toolbox</a>.</p>
+</td><td class="codes"><pre class="brush: clojure">(log/set-debug!)</pre></td></tr><tr><td class="docs"><h3>Higher-order functions</h3>
+
+<p>Одна из обобенностей ФП это использование функций высшего порядка
+для получения новых функций с дополнительным поведением.</p>
+
+<p>Здесь функции <code>decode</code>, которая производит сложное вычисление,
+и <code>find-url</code>, которая делает запрос к базе данных, "оборачиваются"
+кеширующим поведением - функцией <code>clojure.core.memo/lru</code>, которая
+работает как LRU кеш, т.е. N последних использованных значений остаются в кеше
+в зависимости от аргументов, переданных исходным функциям.</p>
+
+<p>Этот кеш не учитывает ничего кроме аргументов, и одному набору может
+соответствовать только одно закешированное значение, именно поэтому
+важно писать "чистые" функции - они беспроблемно композитятся.</p>
+</td><td class="codes"><pre class="brush: clojure">(def decode* (memo/lru decode :lru/threshold lru-threshold))
+(def find-url* (memo/lru find-url :lru/threshold lru-threshold))</pre></td></tr><tr><td class="docs"><h3>Композиция</h3>
+
+<p>Другая из замечательнейших особенностей ФП:
+способность легко сочетать функции. В принципе, это эквивалентно</p>
+
+<pre><code>(defn decode+find-url [&amp; args]
+  (find-url* (apply decode args))
+</code></pre>
+
+<p>Можно сочетать больше функций, и чем их больше, тем привлекательнее
+становится <code>comp</code>, например:</p>
+
+<pre><code>(def next-ansi-for-first-letter (comp char inc int first))
+(defn next-ansi-for-first-letter [s]
+  (char (inc (int (first s)))))
+</code></pre>
+
+<p>Оба варианта работают одинаково:</p>
+
+<pre><code>(next-ansi-for-first-letter "a") ;; =&gt; \b
+</code></pre>
+
+<p>Но, объективно говоря, от сбокочек можно избавиться с помощью макроса <code>clojure.core/-&gt;</code>,
+поэтому, если вы дочитали до этого места, вы больше не будете троллить лисперов скобочками,
+т.к. их количество резко снижается таким макросом:</p>
+
+<pre><code>(defn next-ansi-for-first-letter [s]
+  (-&gt; s first int inc char))
+</code></pre>
+
+<p>Кстати, порядок функций поменялся на естественный :)
+Остальные нагромождения скобочек - это как правило "code smell"</p>
+</td><td class="codes"><pre class="brush: clojure">(def decode+find-url (comp find-url* decode*))</pre></td></tr><tr><td class="docs"><h3>DSL</h3>
+
+<p>Лиспы в общем-то знамениты именно способностью делать DSL.</p>
+
+<p>Подробнее о правилах роутинга и захвата переменных из url можно
+<a href="https://github.com/weavejester/compojure/wiki/Routes-In-Detail">в вики</a> <code>compojure</code>.</p>
+</td><td class="codes"><pre class="brush: clojure">(defroutes post-routes
+  (POST &quot;/shorten&quot; [] shorten))</pre></td></tr><tr><td class="docs"><h3>Макросы</h3>
+
+<p>О макросах можно думать, как о коде, который генерирует (чаще всего шаблонный) код. Компилироваться
+он будет так, как будто вы не поленились и <s>написали</s> скопипастили и поправили его везде.</p>
+
+<p><code>&gt;&gt;=</code> это тоже макрос, похожий на <code>clojure.core/-&gt;</code>, но добавляющий в конце "fallback" в виде
+ответа 404 от обработчика <code>shorty.web/not-found</code>, если сокращенного кода не зарегестрировано в базе.</p>
+
+<p>Убедиться в этом можно, посмотрев, что же получается после однократного раскрытия макросов:</p>
+
+<pre><code>(macroexpand-1 '(shorty.web/&gt;&gt;= "value" identity))
+
+(clojure.core/or
+  (clojure.core/-&gt; "value" identity)
+  (shorty.web/not-found-resp "value"))
+</code></pre>
+
+<p>Обратите внимание на ответ, где <code>or</code> и <code>-&gt;</code> - тоже макросы.
+Полностью раскрыть макросы можно так:</p>
+
+<pre><code>(clojure.walk/macroexpand-all '(shorty.web/&gt;&gt;= "value" identity))
+
+(let* [or__3975__auto__ (identity "value")]
+  (if or__3975__auto__
+    or__3975__auto__
+    (shorty.web/not-found-resp "value")))
+</code></pre>
+
+<p>Если заменить "страшые" имена (munged, введенные для исключения пересечений), то
+получится простой и "прямой" код, без труда доступный для понимания.</p>
+
+<p><code>&gt;&gt;=</code> имеет немного общего с хаскельным <code>&gt;&gt;=</code>, но это разные вещи.
+Тот, кому знакомы монады, может представить, как будто <code>code</code> оборачивается в монаду
+<code>Maybe</code> и затем передается по цепочке "раскодировать" - "найти в базе" - "отдать ответ".</p>
+
+<p>Остальные могут представить себе, что существует несколько функций для каждого этапа
+обработки и выбор между ними основывается на результате выполнения еще одной функции.
+Все это называется "мультиметодом", а та "другая" функция "диспатч-функция". Например:</p>
+
+<pre><code>(defmulti inc-unless-nil class)
+(defmethod inc-unless-nil nil [_] nil)
+(defmethod inc-unless-nil :default [i] (inc i))
+
+(inc-unless-nil nil) ;; =&gt; nil
+(inc-unless-nil 1)   ;; =&gt; 2
+</code></pre>
+
+<p>Таким образом, если мы уверены, что каждый этап цепочки обрабатывает мультиметод,
+который "диспатчится" по классу (а <code>nil</code> это тоже особый класс), то их соединение через <code>-&gt;</code>
+приведет к тому, что в результате мы либо получим результат, либо <code>nil</code> и произойдет вызов <code>else</code>
+ветви из кода, который сгенерировал макрос <code>&gt;&gt;=</code>.
+Такие мультиметоды генерируются макросом <code>shorty.utils/defn-maybe</code>.</p>
+</td><td class="codes"><pre class="brush: clojure">(defroutes code-routes
+  (GET  &quot;/statistics/:code&quot; [code] (&gt;&gt;= code decode* find-url stats))
+  (GET  &quot;/expand/:code&quot;     [code] (&gt;&gt;= code decode+find-url expand))
+  (GET  &quot;/:code&quot;            [code] (&gt;&gt;= code decode+find-url inc-stats redirect)))</pre></td></tr><tr><td class="docs"><p>Роуты композитятся так же легко как и функции. Сопоставление будет происходить
+"сверху-вниз", т.е. сначала REQUEST_URI будет сопоставляться с <code>/shorten</code></p>
+</td><td class="codes"><pre class="brush: clojure">(defroutes all-routes
+  (routes
+    post-routes
+    code-routes))</pre></td></tr><tr><td class="docs"><p><code>atom</code> - это один из 3х способов обрабатывать состояние в Clojure. Подробнее о нем и
+остальных вы можете на <a href="http://youtu.be/nfKrSI7OQnI?t=2h21m1s">отличном докладе Николая Рыжикова</a>
+(тоже на русском, кстати)</p>
+</td><td class="codes"><pre class="brush: clojure">(def stop-server-fn (atom nil))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn stop []
+  (when (and @stop-server-fn
+             (fn? @stop-server-fn))
+    (@stop-server-fn :timeout 100)))</pre></td></tr><tr><td class="docs"><p>Функция в Clojure может диспатчиться по-разному в зависимости от количество аргументов</p>
+</td><td class="codes"><pre class="brush: clojure">(defn start
+  ([] (start nil))
+  ([port]
+   (let [port* (int (or port (:port env) 8080))]
+     (reset! stop-server-fn
+             (http/run-server
+               (-&gt; #'all-routes (wrap-defaults api-defaults) wrap-with-logger)
+               {:port port*}))
+     (println (str &quot;Started listening on http://127.0.0.1:&quot; port*)))))</pre></td></tr><tr><td class="docs"><p>По умолчанию этот метод вызывается, если запускать запакованный <code>jar</code></p>
+</td><td class="codes"><pre class="brush: clojure">(defn -main
+  [&amp; args]
+  (start)
+  (println &quot;Check the log:&quot; log))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(set! *warn-on-reflection* true)</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#shorty.utils" name="shorty.utils"><h1 class="project-name">shorty.utils</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h2>Java interop</h2>
+
+<p>Clojure очень тесно связан с JVM платформой.
+Можно импортировать любой класс и инстанцировать или вызывать методы без оберток.</p>
+</td><td class="codes"><pre class="brush: clojure">(ns shorty.utils
+  (:import [org.apache.commons.validator.routines UrlValidator]))</pre></td></tr><tr><td class="docs"><p>Обратите внимание на <code>~'_</code> - это специальный прием, чтобы при раскрытии макроса символ
+не обретал <code>fully qualified name</code>, т.е. префикс неймспейса.</p>
+</td><td class="codes"><pre class="brush: clojure">(defmacro defn-maybe [x &amp; body]
+  `(do (defmulti ~x class)
+       (defmethod ~x nil [~'_] nil)
+       (defmethod ~x :default ~@body)))</pre></td></tr><tr><td class="docs"><p>Потренируетесь и посмотрите исходник <code>defn</code>.
+Это то же самое, что и:</p>
+
+<pre><code>(def presence (fn [x] (if (empty? x) nil x)))
+</code></pre>
+</td><td class="codes"><pre class="brush: clojure">(defn presence [x]
+  (if (nil? x) nil x))</pre></td></tr><tr><td class="docs"><h3>Переменные</h3>
+
+<p>Основной заменой инмперативному <code>x = 1</code> в Clojure является <code>let</code></p>
+
+<p>Вызов конструктора Java-объектов делается так:</p>
+
+<pre><code>(BigDecimal. "1.0") ;; =&gt; 1.0M
+</code></pre>
+
+<p>вызов метода (т.к. <code>(class "str") ;; =&gt; java.lang.String</code>):</p>
+
+<pre><code>(.length "str") ;; =&gt; 3
+</code></pre>
+
+<p>статические вызовы делаются так:</p>
+
+<pre><code>Integer/MAX_VALUE                ;; =&gt; 2147483647
+(System/getProperty "user.home") ;; =&gt; "/Users/razum2um"
+</code></pre>
+</td><td class="codes"><pre class="brush: clojure">(defn url-validator [s]
+  (let [v (UrlValidator.)]
+    (-&gt; v (.isValid s))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#shorty.coder" name="shorty.coder"><h1 class="project-name">shorty.coder</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h2>Алгоритм сокращения</h2>
+</td><td class="codes"><pre class="brush: clojure">(ns shorty.coder)</pre></td></tr><tr><td class="docs"><p>Замечательным свойством Clojure является инплементация протокола <code>IFn</code>
+для почти всех базовых типов. Так вектор является фукцией и возвращает
+элемент по индексу, хеш - значение по ключу, сет - элемент, входящий в него
+или <code>nil</code>, даже <code>keyword</code> это функция, которая применимо к хешу достает нужное
+значение, например:</p>
+
+<pre><code>({:a 1} :a)                ;; =&gt; 1
+({:a 1} ;b)                ;; =&gt; nil
+(:a {:a 1})                ;; =&gt; 1
+((comp :b :a) {:a {:b 1}}) ;; =&gt; 1
+
+(#{1 2 3} 2) ;; =&gt; 2
+(#{1 2 3} 4) ;; =&gt; nil
+
+([10 20] 1)  ;; =&gt; 20
+(alphabet (rem i base)
+</code></pre>
+
+<p>Также само собой разумеется, что set, sequence, vector, hash-map (и любой свой defrecord)
+универсально обрабатываются в map/filter (интерфейс ISeq). В отличие, например, от Go, где
+до сих пор <a href="https://groups.google.com/forum/#!topic/golang-nuts/v6m86sTRbqA">нет универсального итератора</a></p>
+</td><td class="codes"><pre class="brush: clojure">(def alphabet (vec &quot;bcdfghjkmnpqrstvwxyz23456789BCDFGHJKLMNPQRSTVWXYZ&quot;))
+(def base (count alphabet))</pre></td></tr><tr><td class="docs"><h3>Рекурсия</h3>
+
+<p>Основными заменами инмперативным циклам <code>for</code> являются идеология <code>map/filter/reduce</code>, а
+также рекурсивные вызовы. Если вы знакомы с JVM, то знаете, что платформа не делает хвостовую
+оптимизацию рекурсии, и все же в Clojure можно писать рекурсии, не подверженные StackOverfow
+с помощью функций <code>loop</code> и <code>recur</code>, которые внутри транслируются в <code>while</code> цикл.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn decode [s]
+  (loop [id 0 acc (seq s)]
+    (if-let [[chr &amp; tail] acc]
+      (recur (+ (* id base) (-&gt; alphabet (.indexOf chr))) tail)
+      id)))</pre></td></tr><tr><td class="docs"><h3>Apply</h3>
+
+<p>Отдельно хочется упомянуть очень полезную функцию <code>apply</code>, которая пригодится чтобы
+"распаковать" коллекцию перед применением функции (т.е. вызвать функцию не с одним аргументом -
+коллекцией, а как бы со всеми ее элементами в качестве аргументов):</p>
+
+<pre><code>(+ (filter odd? (range 10)))       ;; =&gt; Cannot cast clojure.lang.LazySeq
+                                   ;;             to java.lang.Number
+(apply + (filter odd? (range 10))) ;; =&gt; 25
+</code></pre>
+
+<p>Также стоит отметить, что деление возвращает рациональное число:</p>
+
+<pre><code>(/ 10 3) ;; =&gt; 10/3
+</code></pre>
+
+<p>поэтому нужно либо явно приводить его к типу <code>int</code>, либо использовать более низкоуровневую
+функцию <code>unchecked-divide-int</code></p>
+</td><td class="codes"><pre class="brush: clojure">(defn encode
+  ([i] (encode '() i))
+  ([acc i]
+   (if (&gt; i 0)
+     (let [next-sym (alphabet (rem i base))
+           next-i (unchecked-divide-int i base)]
+       (recur (conj acc next-sym) next-i))
+     (apply str acc))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#shorty.db" name="shorty.db"><h1 class="project-name">shorty.db</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h2>"Model" layer</h2>
+
+<p>В основном все функции в этом <code>ns</code> это <a href="http://sqlkorma.com/">korma</a>.</p>
+</td><td class="codes"><pre class="brush: clojure">(ns shorty.db
+  (:require [korma.core :refer :all]
+            [korma.db :refer :all]
+            [environ.core :refer [env]]
+            [shorty.coder :refer [decode]]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def db-host (or (env :host) &quot;localhost&quot;))</pre></td></tr><tr><td class="docs"><h3>JDBC</h3>
+
+<p>Основным способом коннекта из JVM в базу данных является jdbc, и он прекрасен.
+Если бы не одно но. Если вы ищете в Clojure ту степень конкурентности, что есть в NodeJS,
+то скорее всего сильно расстроитесь, найдя здесь богомерзкие эксепшены, способность JVM
+загрузить все ядра, но не найдя прекрасных коллбеков на каждый чих и "лесенок" из них ;)</p>
+
+<p>А если серьезно, то даже если использовать асинхронные веб-сервера (или
+тот же <code>http-kit</code>, что и это приложение), а так же <code>core.async</code> для "выпрямления" кода,
+и сделаете все приложение асинхронным, то все равно обнаружите, что запросы к базе
+синхронизируются внутри jdbc и с этим пока ничего не поделать :(</p>
+
+<p>Хотя на свой страх и риск - <a href="https://github.com/alaisi/postgres.async">вот</a>.</p>
+</td><td class="codes"><pre class="brush: clojure">(def jdbc-spec
+  (merge {:classname &quot;org.postgresql.Driver&quot;
+          :minimum-pool-size 100
+          :maximum-pool-size 500
+          :subprotocol &quot;postgresql&quot;
+          :subname (str &quot;//&quot; db-host &quot;/&quot; (env :db))}
+         (select-keys env [:db :user :password])))</pre></td></tr><tr><td class="docs"><h3>Delay</h3>
+
+<p>Несмотря на то, что <code>shorty-db</code> является значением и содержит в себе объект подключения,
+инициализация соединения откладывается до рантайма вот
+<a href="https://github.com/korma/Korma/blob/master/src/korma/db.clj#L53L56">таким кодом</a>.</p>
+</td><td class="codes"><pre class="brush: clojure">(defdb shorty-db (postgres jdbc-spec))</pre></td></tr><tr><td class="docs"><h3>Где моя ActiveRecord?</h3>
+
+<p>Она утонула.</p>
+
+<p>В Clojure вряд ли появятся монстры как Rails. Simplicity über alles!
+Однако, в примерах <code>korma</code> можно найти как связать <code>entities</code> связями
+<code>belongs_to</code>, <code>has_many</code>, а также получать эти релейшены без билда явного
+запроса и т.д.</p>
+</td><td class="codes"><pre class="brush: clojure">(defentity urls
+  (fields :id :url :code :open_count))</pre></td></tr><tr><td class="docs"><h3>SQL Injection</h3>
+
+<p>Проблема экранирования здесь отсутствует как класс, т.к. все параметризованные
+запросы транслируются в <code>prepared statements</code>:</p>
+
+<pre><code>LOG:  execute &lt;unnamed&gt;: INSERT INTO "urls" ("url") VALUES ($1) RETURNING *
+DETAIL:  parameters: $1 = 'http://is.gd'
+</code></pre>
+</td><td class="codes"><pre class="brush: clojure">(defn create-url [{:keys [url] :as row}]
+  (insert urls (values {:url url})))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn update-url [{:keys [id] :as url}]
+  (update urls
+          (set-fields url)
+          (where {:id [= id]})))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn increment-counter [id]
+  (update urls
+          (set-fields {:open_count (raw &quot;urls.open_count + 1&quot;)})
+          (where {:id [= id]})))</pre></td></tr><tr><td class="docs"><h3>Scopes</h3>
+
+<p>Однако данную удобную фичу ActiveRecord очень легко реализовать используя все тот же
+<code>-&gt;</code> макрос и <code>select*</code> из <code>korma</code>:</p>
+
+<pre><code>(let [google-urls   (-&gt; (select* urls) (where {:url [like "%google%"]}))
+      top-urls      (-&gt; google-urls (where {:open_count [&gt; 1000]}))
+      some-top-urls (-&gt; top-url (limit 10))]
+  (select some-top-urls))
+</code></pre>
+
+<p>Запрос будет сделан всего 1 раз со обоими ограничениями и лимитом.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn find-url [id]
+  (-&gt; (select* urls)
+      (where {:id [= id]})
+      select
+      first))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#shorty.web" name="shorty.web"><h1 class="project-name">shorty.web</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h2>Controller & View layers</h2>
+
+<p>В данном конкретном проекте ответы сервера очень просты и не требуют
+шаблонов, поэтому можно рассматривать их вместе с "контроллерами" (в терминах Rails).</p>
+</td><td class="codes"><pre class="brush: clojure">(ns shorty.web
+  (:require [validateur.validation :refer :all]
+            [clojure.string :refer [join]]
+            [clojure.set :refer [union]]
+            [onelog.core :as log]
+            [shorty.coder :refer [encode]]
+            [shorty.db :as db]
+            [shorty.utils :refer [defn-maybe presence url-validator]]))</pre></td></tr><tr><td class="docs"><p><code>^:dynamic</code> - знак для того, чтобы иметь возможность переопределять
+переменную в скопе теста с помощью <code>binding</code></p>
+</td><td class="codes"><pre class="brush: clojure">(def ^:dynamic domain &quot;http://some-doma.in&quot;)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn resp
+  ([code body] (resp code {&quot;Content-Type&quot; &quot;text/plain&quot;} body))
+  ([code headers body]
+   {:status code :headers headers :body body}))</pre></td></tr><tr><td class="docs"><h3>Threading macros</h3>
+
+<p>По аналогии с <code>clojure.core/-&gt;</code> существует <code>clojure.core/-&gt;&gt;</code>, который
+подставляет результат каждого шага из цепочки в качестве последнего
+агрумента нового шага.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn error-resp [errors]
+  (resp 400 (-&gt;&gt; errors vals flatten (apply union) (join &quot;, &quot;))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn not-found-resp [code]
+  (resp 404 (str &quot;No such code found: &quot; code)))</pre></td></tr><tr><td class="docs"><h3>Destruction (~ Parrent Matching)</h3>
+
+<p>Обратите внимание на запись параметров функции:</p>
+
+<pre><code>[{:keys [code] :as row}]
+</code></pre>
+
+<p>Если мы передаем в функцию агрумент <code>{:code "123"}</code>, то внутри функции локальная переменная
+<code>url</code> равна <code>{:code "123"}</code>, a <code>code</code> - "123".</p>
+
+<p>Советую отличное <a href="http://blog.jayfields.com/2010/07/clojure-destructuring.html">разъяснение</a>
+как оно работает на примерах.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn show-code-resp [{:keys [code] :as row}]
+  (resp 200 (str domain &quot;/&quot; code)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn-maybe stats [{:keys [open_count] :as row}]
+  (resp 200 (str open_count)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn-maybe expand [{:keys [url] :as row}]
+  (resp 200  (str url)))</pre></td></tr><tr><td class="docs"><h3>Future</h3>
+
+<p>Простой способ получить фоновый поток. Возвращает promise, который можно блокирующе
+получить через <code>deref</code> или <code>@</code></p>
+
+<p>А еще можно активно использовать <code>map</code> и в один момент заменить его на <code>pmap</code> :)</p>
+</td><td class="codes"><pre class="brush: clojure">(defn-maybe inc-stats [{:keys [id] :as row}]
+  (future (db/increment-counter id))
+  row)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn-maybe redirect [{:keys [url] :as row}]
+  (resp 302 {&quot;Location&quot; url} (str &quot;Redirected to &quot; url)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def shorten-validator
+  (validation-set
+    (presence-of :url)
+    (validate-by :url url-validator :message &quot;url is invalid&quot;)))</pre></td></tr><tr><td class="docs"><h3>Immutability</h3>
+
+<p>Иммутабельность в этом конкретном примере заставляет получать новый
+объект-хеш <code>url*</code> с помощью <code>asssoc</code>. Смысл этого в том, что мы могли бы
+спокойно отдать старый <code>url</code> в другой тред не беспокоясь о синхронизации
+доступа. В данном случае старый объект остался бы без изменений, как был.
+Такой подход к написанию многопоточных программ снижает количество
+дедлоков и "гонок".</p>
+
+<p>Важно заметить, что при <code>assoc</code> не происходит двойного выделения памяти,
+а структуры "шарят" общую часть и новая структура лишь содержит измененную часть +
+ссылку на "хвост" (что немного напоминает <code>LinkedList</code>).
+Есть <a href="http://www.youtube.com/watch?v=mS264h8KGwk">подробное видео</a> про ту же идею
+на фронтенде с детальным объяснением <code>persisted data structures</code>.</p>
+
+<p>Для совместного доступа к общим данным существуют <code>atom</code>, <code>agent</code>, <code>ref</code>.
+Ссылка на доклад по ним дана выше.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn shorten [{:keys [params] :as req}]
+  (if (valid? shorten-validator params)
+    (let [{:keys [id] :as url} (db/create-url (select-keys params [:url]))
+          code (encode id)
+          url* (assoc url :code code)]
+      (future (db/update-url url*))
+      (show-code-resp url*))
+    (-&gt; params shorten-validator error-resp)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmacro &gt;&gt;= [x &amp; fns]
+  `(or (-&gt; ~x ~@fns)
+       (not-found-resp ~x)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/gdeer81/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_shorty.core">shorty.core</li><li class="floating-toc-li" id="floating-toc_shorty.utils">shorty.utils</li><li class="floating-toc-li" id="floating-toc_shorty.coder">shorty.coder</li><li class="floating-toc-li" id="floating-toc_shorty.db">shorty.db</li><li class="floating-toc-li" id="floating-toc_shorty.web">shorty.web</li></ul></div></div><script type="text/javascript"></script></body></html>

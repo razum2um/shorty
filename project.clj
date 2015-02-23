@@ -1,4 +1,4 @@
-(defproject shorty "0.1.0-SNAPSHOT"
+(defproject shorty "0.2.0-SNAPSHOT"
   :description "URL shortening service"
   :url "http://github.com/razum2um/shorty"
   :license {:name "Eclipse Public License"
@@ -36,7 +36,7 @@
                            :env {:port 7070 :test true :cache 1
                                  :alphabet "bcdfghjkmnpqrstvwxyz23456789BCDFGHJKLMNPQRSTVWXYZ"}}
              :test-overrides {}}
-  :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]
+  ;; :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]
   :marginalia {:ordering ["src/shorty/core.clj"
                           "src/shorty/utils.clj"
                           "src/shorty/coder.clj"

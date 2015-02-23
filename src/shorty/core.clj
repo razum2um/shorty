@@ -50,6 +50,7 @@
             [ring.middleware.defaults :refer [api-defaults
                                               wrap-defaults]]
             [ring.middleware.logger :refer [wrap-with-logger]]
+            [korma.core :refer :all]
             ;; импорт определенных функций из namespace
             [shorty.coder :refer [decode]]
             ;; или alias для него
@@ -168,8 +169,8 @@
 ;; Этот кеш не учитывает ничего кроме аргументов, и одному набору может
 ;; соответствовать только одно закешированное значение, именно поэтому
 ;; важно писать "чистые" функции - они беспроблемно композитятся.
-(def decode* (memo/lru decode :lru/threshold lru-threshold))
-(def find-url* (memo/lru find-url :lru/threshold lru-threshold))
+;; (def decode* (memo/lru decode :lru/threshold lru-threshold))
+;; (def find-url* (memo/lru find-url :lru/threshold lru-threshold))
 
 ;; ### Композиция
 ;;
@@ -199,7 +200,12 @@
 ;;
 ;; Кстати, порядок функций поменялся на естественный :)
 ;; Остальные нагромождения скобочек - это как правило "code smell"
-(def decode+find-url (comp find-url* decode*))
+;; (def decode*+find-url* (comp find-url* decode*))
+
+(defn find-cached-url-by-code [code]
+  (if-let [cached (-> db/cached-urls deref (get code))]
+    cached
+    (db/find-url-by-code code)))
 
 ;; ### DSL
 ;;
@@ -260,9 +266,9 @@
 ;; ветви из кода, который сгенерировал макрос `>>=`.
 ;; Такие мультиметоды генерируются макросом `shorty.utils/defn-maybe`.
 (defroutes code-routes
-  (GET  "/statistics/:code" [code] (>>= code decode* find-url stats))
-  (GET  "/expand/:code"     [code] (>>= code decode+find-url expand))
-  (GET  "/:code"            [code] (>>= code decode+find-url inc-stats redirect)))
+  (GET  "/statistics/:code" [code] (>>= code find-cached-url-by-code stats))
+  (GET  "/expand/:code"     [code] (>>= code find-cached-url-by-code expand))
+  (GET  "/:code"            [code] (>>= code find-cached-url-by-code inc-stats redirect)))
 
 ;; Роуты композитятся так же легко как и функции. Сопоставление будет происходить
 ;; "сверху-вниз", т.е. сначала REQUEST_URI будет сопоставляться с `/shorten`, затем
@@ -285,18 +291,26 @@
 (def stop-server-fn (atom nil))
 
 (defn stop []
+  (reset! db/next-id nil)
   (when (and @stop-server-fn
              (fn? @stop-server-fn))
+    (println "Server stopeed.")
     (@stop-server-fn :timeout 100)))
 
 ;; Функция в Clojure может диспатчиться по-разному в зависимости от количество аргументов
 (defn start
   ([] (start nil))
   ([port]
-   (let [port* (int (or port (:port env) 8080))]
+   (let [port* (int (or port (:port env) 8080))
+         next-id (-> (exec-raw "SELECT nextval('urls_id_seq') AS id;" :results)
+                     first
+                     :id)]
+     (reset! db/next-id next-id)
      (reset! stop-server-fn
              (http/run-server
-               (-> #'all-routes (wrap-defaults api-defaults) wrap-with-logger)
+               ;; #'all-routes
+               (-> #'all-routes (wrap-defaults api-defaults))
+               ;; (-> #'all-routes (wrap-defaults api-defaults) wrap-with-logger)
                {:port port*}))
      (println (str "Started listening on http://127.0.0.1:" port*)))))
 

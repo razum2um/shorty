@@ -58,8 +58,9 @@
 ;; получить через `deref` или `@`
 ;;
 ;; А еще можно активно использовать `map` и в один момент заменить его на `pmap` :)
-(defn-maybe inc-stats [{:keys [id] :as row}]
-  (future (db/increment-counter id))
+(defn-maybe inc-stats [{:keys [id code] :as row}]
+  (send db/cached-urls update-in [code :open_count] inc)
+  ;; (future (db/increment-counter id))
   row)
 
 (defn-maybe redirect [{:keys [url] :as row}]
@@ -89,10 +90,12 @@
 ;; Ссылка на доклад по ним дана выше.
 (defn shorten [{:keys [params] :as req}]
   (if (valid? shorten-validator params)
-    (let [{:keys [id] :as url} (db/create-url (select-keys params [:url]))
+    (let [id (swap! db/next-id inc)
+          ;; {:keys [id] :as url} (db/create-url (select-keys params [:url]))
           code (encode id)
-          url* (assoc url :code code)]
-      (future (db/update-url url*))
+          url* {:url (:url params) :code code :id id :open_count 0}]
+      ;; (future (db/create-url url*))
+      (send db/cached-urls assoc code url*)
       (show-code-resp url*))
     (-> params shorten-validator error-resp)))
 

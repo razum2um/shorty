@@ -4,10 +4,14 @@
 (ns shorty.db
   (:require [korma.core :refer :all]
             [korma.db :refer :all]
+            [clojure.core.cache :as cache]
             [environ.core :refer [env]]
             [shorty.coder :refer [decode]]))
 
 (def db-host (or (env :host) "localhost"))
+
+(def next-id (atom nil))
+(def cached-urls (agent (cache/lru-cache-factory {} :threshold 5000)))
 
 ;; ### JDBC
 ;;
@@ -55,8 +59,8 @@
 ;;
 ;;     LOG:  execute <unnamed>: INSERT INTO "urls" ("url") VALUES ($1) RETURNING *
 ;;     DETAIL:  parameters: $1 = 'http://is.gd'
-(defn create-url [{:keys [url] :as row}]
-  (insert urls (values {:url url})))
+(defn create-url [row]
+  (insert urls (values (select-keys row [:id :url :code]))))
 
 (defn update-url [{:keys [id] :as url}]
   (update urls
@@ -80,8 +84,24 @@
 ;;
 ;; Запрос будет сделан всего 1 раз со обоими ограничениями и лимитом.
 (defn find-url [id]
-  (-> (select* urls)
+  (let [url (-> (select* urls)
       (where {:id [= id]})
       select
-      first))
+      first)]
+    (if-let [code (:code url)]
+      (send cached-urls assoc code url))
+    url))
+
+(defn find-url-by-code [code]
+  (let [url (-> (select* urls)
+      (where {:code [= code]})
+      select
+      first)]
+    (if-let [code (:code url)]
+      (try
+      (send cached-urls assoc code url)
+      (catch Exception ex (println "\n!!!\n" (clojure.string/join "\n" (.getStackTrace (agent-error cached-urls))) "\n\n"))))
+    url))
+
+
 

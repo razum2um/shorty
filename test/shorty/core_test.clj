@@ -9,8 +9,8 @@
 
 (deftest fill-stop-server-fn
   (testing "start assigns stop-server-fn"
-    (stop)
-    (with-redefs [org.httpkit.server/run-server (constantly true)]
+    (with-redefs [org.httpkit.server/run-server (constantly true)
+                  ring.adapter.undertow/run-undertow (constantly true)]
       (start)
       (is (= true @stop-server-fn)))))
 

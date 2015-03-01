@@ -43,6 +43,7 @@
 ;;     (clojure.tools.namespace.repl/refresh)
 (ns shorty.core
   (:require [compojure.core :refer [GET POST defroutes routes]]
+            [ring.adapter.undertow :refer [run-undertow]]
             [compojure.route :refer [resources not-found]]
             [environ.core :refer [env]]
             [onelog.core :as log]
@@ -58,6 +59,7 @@
             [shorty.db :as db :refer [find-url]]
             [shorty.web :refer [>>= expand inc-stats redirect shorten
                                 stats]])
+  (:import [io.undertow Undertow])
   ;; дань JVM, обязательная для того, чтобы можно было скомпилировать `jar`
   ;; со входной точкой = этим классом и методом `-main` в нем
   (:gen-class))
@@ -285,19 +287,19 @@
 (def stop-server-fn (atom nil))
 
 (defn stop []
-  (when (and @stop-server-fn
-             (fn? @stop-server-fn))
-    (@stop-server-fn :timeout 100)))
+  (when @stop-server-fn
+    (case
+      (fn? @stop-server-fn) (@stop-server-fn :timeout 100)
+      (instance? Undertow @stop-server-fn) (.stop @stop-server-fn))))
 
 ;; Функция в Clojure может диспатчиться по-разному в зависимости от количество аргументов
 (defn start
   ([] (start nil))
   ([port]
-   (let [port* (int (or port (:port env) 8080))]
-     (reset! stop-server-fn
-             (http/run-server
-               (-> #'all-routes (wrap-defaults api-defaults) wrap-with-logger)
-               {:port port*}))
+   (let [port* (int (or port (:port env) 8080))
+         handler (-> #'all-routes (wrap-defaults api-defaults) wrap-with-logger)]
+     (reset! stop-server-fn (run-undertow handler {:port port*}))
+     ;; (reset! stop-server-fn (http/run-server handler {:port port*}))
      (println (str "Started listening on http://127.0.0.1:" port*)))))
 
 ;; По умолчанию этот метод вызывается, если запускать запакованный `jar`

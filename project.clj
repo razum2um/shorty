@@ -1,4 +1,4 @@
-(defproject shorty "0.1.0-SNAPSHOT"
+(defproject shorty "0.1.1-SNAPSHOT"
   :description "URL shortening service"
   :url "http://github.com/razum2um/shorty"
   :license {:name "Eclipse Public License"
@@ -6,6 +6,8 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [commons-validator/commons-validator "1.4.1"]
                  [com.novemberain/validateur "2.4.2"]
+                 [ring-undertow-adapter "0.2.2" :exclusions [io.undertow/undertow-core]]
+                 [io.undertow/undertow-core "1.2.0.Beta4"]
                  [http-kit "2.1.19"]
                  [compojure "1.3.2"]
                  [postgresql "9.3-1102.jdbc41"]
